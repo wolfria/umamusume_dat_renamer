@@ -1,0 +1,21 @@
+{
+  "name": "umamusume_dat_renamer",
+  "version": "1.0.0",
+  "description": "Create a renamed file that references the metadata of the DMM version of Uma Musume.",
+  "main": "index.js",
+  "scripts": {
+    "start": "babel-node main.js --presets env"
+  },
+  "author": "wolfria",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wolfria/umamusume_dat_renamer.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "dotenv": "^10.0.0",
+    "sqlite3": "^5.0.2"
+  }
+}
