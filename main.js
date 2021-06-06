@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 dotenv.config();
 import sqlite3 from "sqlite3"
 import path from "path"
-import { stat, mkdir, copyFile } from "fs"
+import { stat, mkdir, copyFile } from "fs/promises"
 
 const umamusumePath = process.env.UMAMUSUME_PATH
 const exportPath = process.env.EXPORT_PATH || './result'
@@ -17,12 +17,12 @@ const exportPath = process.env.EXPORT_PATH || './result'
     const meta = new Meta(row.n, row.h, row.m)
     
     const hashFullPath = `${umamusumePath}/dat/${meta.hashFullPath}`
-    if (!await existsFile(hashFullPath)) return console.error(`not found ${hashFullPath}`)
+    if (!await existsFile(hashFullPath)) return console.error(`not found ${hashFullPath} so skip`)
   
     const dest = `${exportPath}/${meta.fullPath}`
     if (await existsFile(dest)) return console.log(`already exists so skip ${dest}`)
-    await makeDir(`${exportPath}/${meta.dirName}`, {recursive: true})
-    await cpFile(hashFullPath, dest)
+    await mkdir(`${exportPath}/${meta.dirName}`, { recursive: true })
+    await copyFile(hashFullPath, dest)
   })
 })()
 
@@ -38,28 +38,13 @@ class Meta {
   }
 }
 
-function existsFile(path) {
-  return new Promise((resolve, reject) => {
-    stat(path, (err, stats) => {
-      return resolve(!err)
-    })
-  })
+async function existsFile(path) {
+  let exists = true
+  try {
+    await stat(path)
+  } catch (e) {
+    exists = false
 }
 
-function makeDir(path, option) {
-  return new Promise((resolve, reject) => {
-    mkdir(path, option, (err) => {
-      if (err) return reject(err)
-      return resolve()
-    })
-  })
-}
-
-function cpFile(src, dest) {
-  return new Promise((resolve, reject) => {
-    copyFile(src, dest, (err) => {
-      if (err) return reject(err)
-      return resolve()
-    })
-  })
+  return exists
 }
